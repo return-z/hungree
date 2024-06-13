@@ -1,6 +1,8 @@
 import { z } from "zod";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure, protectedProcedure } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 
 export const onboardingRouter = createTRPCRouter({
   hello: publicProcedure
@@ -9,5 +11,35 @@ export const onboardingRouter = createTRPCRouter({
       return {
         greeting: `Hello ${input.text}`,
       };
+    }),
+
+  onboardingForm: protectedProcedure
+    .input(z.object({
+      name: z.string(),
+      contact: z.string(),
+      lat: z.number(),
+      long: z.number(),
+      radius: z.number(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await clerkClient.users.updateUser(ctx.auth.userId, {
+        publicMetadata: {
+          onboardingComplete: true,
+        },
+      })
+      const merchantEntry = await ctx.db.dim_merchant.create({
+        data: {
+          name: input.name,
+          latitude: input.lat,
+          longitude: input.long,
+          radius: input.radius,
+          created_at: new Date(),
+        }
+      })
+      try {
+        return { message: 'onboarding completed' }
+      } catch (err) {
+        return { error: "There was an error updating the user metadata." };
+      }
     })
 });

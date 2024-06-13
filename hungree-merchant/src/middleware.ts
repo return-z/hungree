@@ -3,11 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher(["/"])
+const apiRoute = createRouteMatcher(["/api/(.*)"])
 
 export default clerkMiddleware((auth, req: NextRequest) => {
     const { userId, sessionClaims, redirectToSignIn } = auth();
 
-    // For users visiting /onboarding, don't try to redirect
+    if (apiRoute(req))
+      return;
+
+   /// For users visiting /onboarding, don't try to redirect
     if (userId && isOnboardingRoute(req)) {
       return NextResponse.next();
     }
