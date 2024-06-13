@@ -28,7 +28,7 @@ export const OnboardingForm = () => {
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [radius, setRadius] = useState('');
-    const [latLong, setLatLong] = useState<Coordinates>({ lat: -1, long: -1 });
+    const [latLong, setLatLong] = useState<Coordinates>();
 
     const updateMetadata = api.onboarding.updateOnboardingMetadata.useMutation({ 
       async onSettled(data, error) {
@@ -54,10 +54,12 @@ export const OnboardingForm = () => {
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
+        if (!latLong || !phoneNumber)
+          return
         const formData: OnboardingFormData  = {
           'name': name,
           'location': latLong,
-          'contact': phoneNumber ?? '',
+          'contact': phoneNumber,
           'radius': Number(radius),
         }
         onboardingForm.mutate({
@@ -85,9 +87,11 @@ export const OnboardingForm = () => {
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Merchant Location</label>
             <AutoComplete 
                 apiKey={env.NEXT_PUBLIC_GOOGLE_API_KEY}
-                onPlaceSelected={(place) => {
-                setLatLong({ lat : place.geometry.location.lat(), long: place.geometry.location.lng() });
-                setLocation(place);
+                onPlaceSelected={(place: google.maps.places.PlaceResult) => {
+                  if (!place.geometry?.location?.lat() || !place.geometry?.location?.lng() || !place.name)
+                    return
+                  setLatLong({ lat: place.geometry?.location?.lat() , long:place.geometry?.location?.lat() });
+                  setLocation(place.name);
                 }}
                 options={{
                 types: ["(regions)"],
