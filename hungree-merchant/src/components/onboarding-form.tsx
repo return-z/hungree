@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { api } from '~/utils/api';
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { Spinner } from './spinner';
 
 export type Coordinates = {
     lat: number,
@@ -29,7 +30,27 @@ export const OnboardingForm = () => {
     const [radius, setRadius] = useState('');
     const [latLong, setLatLong] = useState<Coordinates>({ lat: -1, long: -1 });
 
-    const onboardingForm = api.onboarding.onboardingForm.useMutation()
+    const updateMetadata = api.onboarding.updateOnboardingMetadata.useMutation({ 
+      async onSettled(data, error) {
+        if (data?.message) {
+          await user?.reload();
+          router.push("/dashboard");
+        }
+        if (error) {
+          setError(error.message);
+        }
+      },
+    })
+
+    const onboardingForm = api.onboarding.onboardingForm.useMutation({ 
+      onSettled(data, error) {
+        if (error)
+          setError(error.message)
+        else
+          updateMetadata.mutate()
+      },
+    })
+
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -45,19 +66,13 @@ export const OnboardingForm = () => {
           lat: formData.location.lat,
           long: formData.location.long,
           radius: formData.radius,
-        })
-        if (onboardingForm.data?.message) {
-            await user?.reload();
-            router.push("/");
-          }
-          else {
-            setError(error);
-          }
+        });
       }
 
     return (
     <>
-        <form className="max-w-sm mx-auto w-full" onSubmit={onSubmit}>
+      {onboardingForm.isPending || updateMetadata.isPending ? <Spinner /> :
+        <form className="max-w-sm mx-auto w-full" onSubmit={onSubmit} aria-disabled={onboardingForm.isPending || updateMetadata.isPending}>
         <div className="p-1">
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Merchant Name</label>
         <input name="name"  onChange={(e) => setName(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
@@ -90,9 +105,9 @@ export const OnboardingForm = () => {
             <div className="flex w-full px-1 py-3">
             <button type="submit" className="border rounded-lg border-white text-white p-2 hover:bg-blue-700">Submit Onboarding Info</button>
             </div>
-        </form>  
+        </form> } 
         <div className="w-full py-2">
-          {onboardingForm.error ? <p className="text-white">Something went wrong! {onboardingForm.error.message}</p> : <p className="text-white">{onboardingForm.data?.message}</p>}
+          {onboardingForm.error ? <p className="text-white">Something went wrong! {onboardingForm.error.message}</p> : <p className="text-white">{updateMetadata.data?.message}</p>}
         </div>
     </>
     )

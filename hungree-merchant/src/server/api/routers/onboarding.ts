@@ -22,24 +22,36 @@ export const onboardingRouter = createTRPCRouter({
       radius: z.number(),
     }))
     .mutation(async ({ ctx, input }) => {
-      await clerkClient.users.updateUser(ctx.auth.userId, {
-        publicMetadata: {
-          onboardingComplete: true,
-        },
-      })
-      const merchantEntry = await ctx.db.dim_merchant.create({
-        data: {
-          name: input.name,
-          latitude: input.lat,
-          longitude: input.long,
-          radius: input.radius,
-          created_at: new Date(),
+        try {
+          const merchantEntry = await ctx.db.dim_merchant.create({
+            data: {
+              name: input.name,
+              latitude: input.lat,
+              longitude: input.long,
+              radius: input.radius,
+              created_at: new Date(),
+            }
+          })
+        } catch(err) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR'
+          })
         }
-      })
-      try {
-        return { message: 'onboarding completed' }
-      } catch (err) {
-        return { error: "There was an error updating the user metadata." };
-      }
-    })
+      }),
+
+    updateOnboardingMetadata: protectedProcedure
+      .mutation(async ({ctx}) => {
+        try {
+          const res = await clerkClient.users.updateUser(ctx.auth.userId, {
+            publicMetadata: {
+              onboardingComplete: true,
+            },
+          })
+          return { 'message' : ctx.auth.userId }
+        } catch (err) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+          })
+        }
+      }),
 });

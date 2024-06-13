@@ -1,6 +1,7 @@
-import { SignOutButton, UserButton, useUser } from "@clerk/nextjs";
+import { SignOutButton, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 
 export const Header = () => {
+    const { user } = useUser();
     return (
         <div className="flex flex-row bg-black justify-between text-white gap-4">
         <button className="flex flex-row items-center p-4 gap-4">
@@ -9,6 +10,7 @@ export const Header = () => {
         </svg>
         <h1 className="text-5xl font-extrabold ">Hungree</h1>
         </button>
+        {user ? (
         <div className="flex flex-row gap-4">
           <div className="flex items-center">
           <SignOutButton>
@@ -18,7 +20,13 @@ export const Header = () => {
           <div className="flex p-4 align-center">
             <UserButton />
           </div>
-        </div>
+        </div> ) : (
+          <div className="flex items-center p-4">
+          <SignInButton>
+            <button className="rounded-lg p-2 border font-light border-white hover:bg-blue-700">Sign In</button>
+          </SignInButton>
+          </div>
+        )}
       </div>
     )
 }
