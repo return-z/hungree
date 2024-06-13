@@ -11,13 +11,6 @@ export type Coordinates = {
   long: number,
 }
 
-export type Form = {
-  name: any,
-  contact: any,
-  location: any,
-  radius: any,
-}
-
 const OnboardingComponent: NextPage = () => {
   const { user } = useUser();
 
