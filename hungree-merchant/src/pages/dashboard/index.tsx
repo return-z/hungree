@@ -1,13 +1,16 @@
 import { type NextPage } from "next";
 import { Header } from "~/components/header";
 import ItemsTable from "~/components/items-table";
+import { useState } from "react";
+import { AddItemForm } from "~/components/add-item-form";
 
-const dashboard: NextPage = () => {
+const Dashboard: NextPage = () => {
+    const [addItem, setAddItem] = useState<boolean>(false);
     return (
         <>
         <Header />
-        <main className="flex min-h-screen flex-col items-center bg-black p-4">
-            <div className="flex text-4xl font-extrabold gap-x-4 items-center justify-center w-full py-2">
+        <main className="flex min-h-screen flex-col items-center bg-black gap-4">
+            <div className="flex text-5xl font-extrabold gap-x-4 items-center justify-center w-full py-2">
                 <h1 className="text-white text-center">Merchant Dashboard</h1>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -24,10 +27,21 @@ const dashboard: NextPage = () => {
                 </div>
                 </div>
             </div>
+            <div className="px-4">
+                { !addItem 
+                ? (
+                <div className="flex gap-2">
+                    <button className="text-white p-4 bg-transparent border border-white rounded-lg" onClick={() => setAddItem(!addItem)}>+ Add a menu item</button>
+                    <button className="text-white p-4 bg-transparent border border-white rounded-lg" onClick={() => setAddItem(!addItem)}>Import Items as CSV</button>
+                </div>
+                )
+                : 
+                <AddItemForm addItem={addItem} setAddItem={setAddItem} />}
+            </div>
             <ItemsTable/>
         </main>
       </>
     )
 }
 
-export default dashboard;
+export default Dashboard;

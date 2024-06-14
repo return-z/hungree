@@ -30,27 +30,19 @@ export const onboardingRouter = createTRPCRouter({
               longitude: input.long,
               radius: input.radius,
               created_at: new Date(),
+              clerk_uuid: ctx.auth.userId,
             }
           })
+          await clerkClient.users.updateUser(ctx.auth.userId, {
+            publicMetadata: {
+              onboardingComplete: true,
+              merchant_uuid: merchantEntry.uuid,
+            },
+          })
+          return { message: 'user onboarded' } 
         } catch(err) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR'
-          })
-        }
-      }),
-
-    updateOnboardingMetadata: protectedProcedure
-      .mutation(async ({ctx}) => {
-        try {
-          const res = await clerkClient.users.updateUser(ctx.auth.userId, {
-            publicMetadata: {
-              onboardingComplete: true,
-            },
-          })
-          return { 'message' : ctx.auth.userId }
-        } catch (err) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
           })
         }
       }),
