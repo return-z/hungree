@@ -1,13 +1,11 @@
 import { z } from "zod";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "~/server/api/trpc";
-import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
   getItems: protectedProcedure
     .query(async ({ ctx }) => {
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
+        console.log(merchantUuid);
         const menuItems = await ctx.db.menu_items.findMany({
             where: {
                 merchant_uuid: merchantUuid,
