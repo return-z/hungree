@@ -15,11 +15,18 @@ interface AddItemForm {
 }
 
 export const AddItemForm = (props: Props) => {
-    const addItem = api.dashboard.addItem.useMutation();
+    const ctx = api.useUtils()
+
+    const addItem = api.dashboard.addItem.useMutation({
+        onSuccess: () => {
+            props.setAddItem(!addItem);
+            void ctx.dashboard.getItems.invalidate();
+        }
+    });
 
     const [itemName, setItemName] = useState('');
     const [itemType, setItemType] = useState('');
-    const [itemPrice, setItemPrice] = useState(-1);
+    const [itemPrice, setItemPrice] = useState('');
     const [isAvailable, setIsAvailable] = useState(false);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -27,7 +34,7 @@ export const AddItemForm = (props: Props) => {
         addItem.mutate({
             name: itemName,
             type: itemType,
-            price: itemPrice,
+            price: Number(itemPrice),
             availability: isAvailable,
         });
     }
@@ -42,19 +49,19 @@ export const AddItemForm = (props: Props) => {
             <div className="flex flex-row md:gap-4">
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Name</label>
-                <input name="name" onChange={(e) => setItemName(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+                <input name="name" value={itemName} onChange={(e) => setItemName(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
                 </div>
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Type</label>
-                <input name="type" onChange={(e) => setItemType(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+                <input name="type" value={itemType} onChange={(e) => setItemType(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
                 </div>
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Price</label>
-                <input name="price" onChange={(e) => setItemPrice(Number(e.target.value))} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+                <input name="price" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
                 </div>
-                <div className="p-1 flex flex-col">
-                <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Availability</label>
-                <input name="availability" onChange={(e) => setIsAvailable(Boolean(e.target.value))} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+                <div className="p-1 flex flex-col justify-center">
+                <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Availabe?</label>
+                <input type="checkbox" name="availability" checked={isAvailable} onChange={() => setIsAvailable(!isAvailable)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light" />
                 </div>
             </div>
             <div className="flex flex-row gap-4">

@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 export const onboardingRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
+    .mutation(({ input }) => {
       return {
         greeting: `Hello ${input.text}`,
       };

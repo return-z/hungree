@@ -27,4 +27,5 @@ model menu_items {
   item_name     String?
   item_price    Float?
   is_available  Boolean?
+  item_type     String?
 }

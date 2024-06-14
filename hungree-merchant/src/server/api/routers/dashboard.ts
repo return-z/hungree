@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
-  getItems: protectedProcedure
+    getItems: protectedProcedure
     .query(async ({ ctx }) => {
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
         console.log(merchantUuid);
@@ -10,6 +10,7 @@ export const dashboardRouter = createTRPCRouter({
             where: {
                 merchant_uuid: merchantUuid,
             },
+            take: 10,
         })
         return menuItems;
     }),
@@ -26,6 +27,7 @@ export const dashboardRouter = createTRPCRouter({
             await ctx.db.menu_items.create({
                 data: {
                     item_name: input.name,
+                    item_type: input.type,
                     item_price: input.price,
                     merchant_uuid: merchantUuid,
                     is_available: input.availability,
