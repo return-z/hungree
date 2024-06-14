@@ -4,7 +4,7 @@ import ItemsTable from "~/components/items-table";
 import { useState } from "react";
 import { AddItemForm } from "~/components/add-item-form";
 
-const dashboard: NextPage = () => {
+const Dashboard: NextPage = () => {
     const [addItem, setAddItem] = useState<boolean>(false);
     return (
         <>
@@ -44,4 +44,4 @@ const dashboard: NextPage = () => {
     )
 }
 
-export default dashboard;
+export default Dashboard;

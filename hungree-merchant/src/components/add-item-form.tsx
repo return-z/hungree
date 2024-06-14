@@ -4,7 +4,7 @@ import { type FormEvent } from "react"
 
 interface Props {
     addItem: boolean,
-    setAddItem: Dispatch<SetStateAction<boolean>>,
+    setAddItem: (addItem: boolean) => void,
 }
 
 interface AddItemForm {
