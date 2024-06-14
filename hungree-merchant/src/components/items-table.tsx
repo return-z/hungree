@@ -1,6 +1,10 @@
+import { api } from "~/utils/api"
+
 export default function ItemsTable() {
+    const { data } = api.dashboard.getItems.useQuery();
+    console.log(data);
     return (
-      <div className="p-4 w-full">
+      <div className="px-4 w-full">
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-800">

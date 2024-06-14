@@ -1,5 +1,7 @@
+import dashboard from "~/pages/dashboard";
 import { onboardingRouter } from "~/server/api/routers/onboarding";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { dashboardRouter } from "./routers/dashboard";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +10,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   onboarding: onboardingRouter,
+  dashboard: dashboardRouter,
 });
 
 // export type definition of API

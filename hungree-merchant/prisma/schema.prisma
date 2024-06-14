@@ -10,10 +10,21 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model dim_merchant {
-  uuid       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  uuid       String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String?
   created_at DateTime @default(now()) @db.Timestamp(6)
   radius     Int?
   latitude   Float?
   longitude  Float?
+  clerk_uuid String?
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model menu_items {
+  item_uuid     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+  merchant_uuid String?  @db.Uuid
+  item_name     String?
+  item_price    Float?
+  is_available  Boolean?
 }
