@@ -7,7 +7,7 @@ const apiRoute = createRouteMatcher(["/api/(.*)"])
 
 export default clerkMiddleware((auth, req: NextRequest) => {
     const { userId, sessionClaims, redirectToSignIn } = auth();
-    console.log('try')
+    
     if (apiRoute(req))
       return;
 

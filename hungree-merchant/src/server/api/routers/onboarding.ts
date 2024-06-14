@@ -36,7 +36,7 @@ export const onboardingRouter = createTRPCRouter({
           await clerkClient.users.updateUser(ctx.auth.userId, {
             publicMetadata: {
               onboardingComplete: true,
-              merchant_uuid: merchantEntry.uuid,
+              merchantUuid: merchantEntry.uuid,
             },
           })
           return { message: 'user onboarded' } 
