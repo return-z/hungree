@@ -20,7 +20,7 @@ export const AddItemForm = (props: Props) => {
     const addItem = api.dashboard.addItem.useMutation({
         onSuccess: () => {
             props.setAddItem(!addItem);
-            ctx.dashboard.getItems.invalidate();
+            void ctx.dashboard.getItems.invalidate();
         }
     });
 

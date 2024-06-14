@@ -13,9 +13,6 @@ interface Props {
 }
 
 const ItemsTable = ( props: Props ) => {
-  const handleRowClick = () => {
-    
-  }
   return (
     !props.data?.length ? 
      <p className="text-3xl font-bold text-white">Nothing to show! Please add items to the menu</p> : (  
@@ -31,7 +28,7 @@ const ItemsTable = ( props: Props ) => {
         </thead>
         <tbody>
           {props.data?.map((item, idx) => (
-              <tr className="border-b border-gray-200 dark:border-gray-700" onClick={handleRowClick}>
+              <tr key={idx} className="border-b border-gray-200 dark:border-gray-700">
                 <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.item_name}</td>
                 <td className="px-4 py-3 text-gray-700 dark:text-gray-400">{item.item_type}</td>
                 <td className="px-4 py-3 text-gray-700 dark:text-gray-400">{item.item_price}</td>
