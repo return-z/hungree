@@ -33,5 +33,29 @@ export const dashboardRouter = createTRPCRouter({
                     is_available: input.availability,
                 }
             });
+        }),
+    
+    editItem: protectedProcedure
+        .input(z.object({
+            name: z.string(),
+            type: z.string(),
+            price: z.number(),
+            availability: z.boolean(),
+            itemUuid: z.string(),
+        }))
+        .mutation(async({ input, ctx }) => {
+            const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid;
+            await ctx.db.menu_items.update({
+                where: {
+                    item_uuid: input.itemUuid
+                },
+                data: {
+                    item_name: input.name,
+                    item_type: input.type,
+                    item_price: input.price,
+                    merchant_uuid: merchantUuid,
+                    is_available: input.availability,
+                }
+            })
         })
 })
