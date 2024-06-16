@@ -1,6 +1,6 @@
 import { MutableRefObject, RefObject, useState, forwardRef, ForwardedRef, useEffect } from "react"
 import { type FormEvent } from "react"
-
+import { api } from "~/utils/api";
 
 type TableRow = {
     item_uuid: string;
@@ -25,19 +25,39 @@ const EditModal = forwardRef((props: Props, ref: ForwardedRef<HTMLDialogElement 
     const [itemType, setItemType] = useState<string | undefined>();
     const [itemPrice, setItemPrice] = useState<string | undefined>();
     const [isAvailable, setIsAvailable] = useState<boolean | null | undefined>(false);
+    const [itemUuid, setItemUuid] = useState<string | undefined>();
+
+    const ctx = api.useUtils()
+    const editItem = api.dashboard.editItem.useMutation({
+        onSuccess: () => {
+            props.setOpen(!open);
+            modalRef.current?.close();
+            void ctx.dashboard.getItems.invalidate();
+        }
+    });
 
     useEffect(() => {
         setItemName(props.dataRow?.item_name?.toString());
         setItemType(props.dataRow?.item_type?.toString());
         setItemPrice(props.dataRow?.item_price?.toString());
         setIsAvailable(props.dataRow?.is_available);
+        setItemUuid(props.dataRow?.item_uuid);
         modalRef.current?.showModal()
     }, [props.open])
 
     console.log(itemName);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        if (!itemName || !itemType || !itemPrice || isAvailable === undefined || isAvailable === null || !itemUuid)
+            return
         event.preventDefault();
+        editItem.mutate({
+            name: itemName,
+            type: itemType,
+            price: Number(itemPrice),
+            availability: isAvailable,
+            itemUuid: itemUuid,
+        })
     }
 
     const handleCancel = () => {
@@ -53,7 +73,7 @@ const EditModal = forwardRef((props: Props, ref: ForwardedRef<HTMLDialogElement 
             <div className="text-lg">
                 Edit an item in your menu
             </div>
-            <form className="flex flex-col items-center mx-auto gap-4">
+            <form className="flex flex-col items-center mx-auto gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-row md:gap-4">
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Name</label>
