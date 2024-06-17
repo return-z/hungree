@@ -23,8 +23,8 @@ export const Pagination = (props: Props) => {
                     </button>
                 </li>
                 {Array(pageCount).fill(null).map((value, index) => (
-                    <li>
-                        <button key={index} className="border border-white rounded-lg px-2">{index+1}</button>
+                    <li key={index}>
+                        <button className="border border-white rounded-lg px-2">{index+1}</button>
                     </li>
                 ))}
                 <li>
