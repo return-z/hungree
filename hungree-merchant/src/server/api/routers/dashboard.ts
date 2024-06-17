@@ -1,9 +1,14 @@
+import { off } from "process";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
     getItems: protectedProcedure
-    .query(async ({ ctx }) => {
+    .input(z.object({
+        pageNumber: z.number(),
+    }))
+    .query(async ({ ctx, input }) => {
+        const offset = input.pageNumber * 10;
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
         console.log(merchantUuid);
         const menuItems = await ctx.db.menu_items.findMany({
@@ -11,10 +16,26 @@ export const dashboardRouter = createTRPCRouter({
                 merchant_uuid: merchantUuid,
             },
             take: 10,
+            skip: offset,
         })
         return menuItems;
     }),
     
+    countOfItems: protectedProcedure
+    .query(async({ ctx }) => {
+        const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
+        const itemsCount = await ctx.db.menu_items.aggregate({
+            _count: {
+                item_uuid: true,
+            },
+            where: {
+                merchant_uuid: merchantUuid,
+            },
+        });
+        console.log(itemsCount._count);
+        return itemsCount._count.item_uuid;
+    }),
+
     addItem: protectedProcedure
         .input(z.object({
             name: z.string(),

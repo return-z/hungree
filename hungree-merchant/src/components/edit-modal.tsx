@@ -81,7 +81,12 @@ const EditModal = forwardRef((props: Props, ref: ForwardedRef<HTMLDialogElement 
                 </div>
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Type</label>
-                <input name="type" value={itemType} onChange={(e) => setItemType(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+                <select value={itemType} onChange={(e) => setItemType(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required>
+                    <option>Veg</option>
+                    <option>Vegan</option>
+                    <option>Dairy</option>
+                    <option>Non Veg</option>
+                </select>
                 </div>
                 <div className="p-1 flex flex-col">
                 <label className="mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Price</label>

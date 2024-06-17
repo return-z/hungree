@@ -1,5 +1,6 @@
 import EditModal from "./edit-modal";
 import { useState, useRef } from "react";
+import { Pagination } from "./pagination";
 
 type TableRow = {
   item_uuid: string;
@@ -12,7 +13,8 @@ type TableRow = {
 }
 
 interface Props {
-  data: TableRow[] | undefined
+  data: TableRow[] | undefined;
+  itemsCount: number | undefined;
 }
 
 const ItemsTable = ( props: Props ) => {
@@ -27,7 +29,12 @@ const ItemsTable = ( props: Props ) => {
 
   return (
     !props.data?.length ? 
-     <p className="text-3xl font-bold text-white">Nothing to show! Please add items to the menu</p> : (  
+     <p className="text-3xl font-bold text-white">Nothing to show! Please add items to the menu</p> : ( 
+    <>
+    <div className="flex flex-row w-5/6 justify-between p-4">
+      <input placeholder="Search for items"/> 
+      <Pagination itemsCount={props.itemsCount}/>
+    </div>
     <div className="p-4 w-5/6">
       <table className="w-full border-collapse text-left">
         <thead>
@@ -59,6 +66,7 @@ const ItemsTable = ( props: Props ) => {
       </table>
       <EditModal open={open} dataRow={dataRow} setOpen={setOpen} ref={modalRef} />
     </div>
+    </>
     )
   )
 }
