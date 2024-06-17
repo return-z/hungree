@@ -16,15 +16,16 @@ const Dashboard: NextPage = () => {
 
     const { data } = api.dashboard.getItems.useQuery({
         pageNumber: currentPage,
-        searchState: searchState,
         searchTerm: searchTerm,
     });
 
     const { data: itemsCount } = api.dashboard.countOfAllItems.useQuery({
-        searchState: searchState,
+        searchTerm: searchTerm,
     });
 
-    const { data: activeItemsCount } = api.dashboard.countOfActiveItems.useQuery();
+    const { data: activeItemsCount } = api.dashboard.countOfActiveItems.useQuery({
+        searchTerm: searchTerm,
+    });
 
     useEffect(() => {
         void ctx.dashboard.getItems.invalidate();
@@ -32,7 +33,7 @@ const Dashboard: NextPage = () => {
         void ctx.dashboard.countOfActiveItems.invalidate();
         if (itemsCount)
             setPageCount(Math.ceil(itemsCount._count.item_uuid/10))
-    }, [itemsCount, addItem])
+    }, [addItem, itemsCount])
 
     return (
         
@@ -72,8 +73,7 @@ const Dashboard: NextPage = () => {
                 <AddItemForm addItem={addItem} setAddItem={setAddItem} />}
             </div>
             <ItemsTable data={data} pageCount={pageCount} currentPage={currentPage} 
-            setCurrentPage={setCurrentPage} searchState={searchState} setSearchState={setSearchState}
-            searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            setCurrentPage={setCurrentPage} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </main>
         </> : <Spinner /> }
       </>
