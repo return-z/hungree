@@ -17,8 +17,6 @@ interface Props {
   pageCount: number | undefined;
   currentPage: number;
   setCurrentPage:(currentPage: number) => void;
-  searchState: boolean,
-  setSearchState: (searchState: boolean) => void;
   searchTerm: string,
   setSearchTerm: (searchTerm: string) => void;
 }
@@ -27,6 +25,7 @@ const ItemsTable = ( props: Props ) => {
   const [open, setOpen] = useState(false);
   const [dataRow, setDataRow] = useState<TableRow>();
   const modalRef = useRef<HTMLDialogElement | null>(null);
+  const [searchQuery, setSearchQuery] = useState(props.searchTerm);
 
   const handleEditModal = (item: TableRow) => {
     setOpen(!open);
@@ -34,12 +33,13 @@ const ItemsTable = ( props: Props ) => {
   }
 
   const handleSearch = () => {
-    props.setSearchState(!props.searchState);
+    props.setCurrentPage(1);
+    props.setSearchTerm(searchQuery);
   }
 
   const handleClear = () => {
-    props.setSearchState(!props.searchState);
     props.setSearchTerm('');
+    setSearchQuery('');
   }
 
   return (
@@ -48,13 +48,19 @@ const ItemsTable = ( props: Props ) => {
     <>
     <div className="flex flex-row w-5/6 justify-between px-4 items-center">
       <div className="flex items-center w-1/3">
-        <input name="search" placeholder="Search for items" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
-        <button className="hover:bg-blue-700 hover:border rounded-lg border-gray-300" onClick={handleSearch}>
+        <input name="search" placeholder="Search for items" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full p-2.5 dark:bg-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-300 dark:focus:border-gray-300 dark:shadow-sm-light"  required/>
+        <button className="hover:bg-green-700 hover:border rounded-lg border-green-700" onClick={handleSearch}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-gray-300 rounded-lg p-1">
             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
         </button>
-        {props.searchState ? <button className="hidden text-white border rounded-lg hover:bg-red-700">Clear</button> : null}
+        {props.searchTerm.length > 0 ? 
+        <button className="text-white rounded-lg hover:bg-red-700 hover:border hover:border-red-700" onClick={handleClear}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-10 text-gray-300 rounded-lg p-1">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button> 
+        : null}
       </div>
       <Pagination pageCount={props.pageCount} currentPage={props.currentPage} setCurrentPage={props.setCurrentPage} />
     </div>

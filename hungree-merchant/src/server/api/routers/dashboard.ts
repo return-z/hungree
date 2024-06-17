@@ -1,21 +1,28 @@
+import { Optional } from "@tanstack/react-query";
 import { off } from "process";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+
+interface whereClause {
+    merchantUuid: string | undefined,
+    searchTerm?: string | undefined,
+}
 
 export const dashboardRouter = createTRPCRouter({
     getItems: protectedProcedure
     .input(z.object({
         pageNumber: z.number(),
-        searchState: z.boolean(),
         searchTerm: z.string(),
     }))
     .query(async ({ ctx, input }) => {
         const offset = (input.pageNumber - 1) * 10;
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
-        console.log(merchantUuid);
         const menuItems = await ctx.db.menu_items.findMany({
             where: {
                 merchant_uuid: merchantUuid,
+                item_name: {
+                    search: input.searchTerm.length > 0 ? input.searchTerm : undefined
+                }
             },
             take: 10,
             skip: offset,
@@ -25,7 +32,7 @@ export const dashboardRouter = createTRPCRouter({
     
     countOfAllItems: protectedProcedure
     .input(z.object({
-        searchState: z.boolean(),
+        searchTerm: z.string(),
     }))
     .query(async({ ctx, input }) => {
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid;
@@ -38,6 +45,9 @@ export const dashboardRouter = createTRPCRouter({
             },
             where: {
                 merchant_uuid: merchantUuid,
+                item_name: {
+                    search: input.searchTerm.length > 0 ? input.searchTerm : undefined
+                }
             },
         });
         console.log(itemsCount._count);
@@ -45,7 +55,10 @@ export const dashboardRouter = createTRPCRouter({
     }),
 
     countOfActiveItems: protectedProcedure
-    .query(async({ ctx }) => {
+    .input(z.object({
+        searchTerm: z.string(),
+    }))
+    .query(async({ ctx, input }) => {
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid;
         const itemsCount = await ctx.db.menu_items.aggregate({
             _count: {
@@ -54,6 +67,9 @@ export const dashboardRouter = createTRPCRouter({
             where: {
                 merchant_uuid: merchantUuid,
                 is_available: true,
+                item_name: {
+                    search: input.searchTerm.length > 0 ? input.searchTerm : undefined
+                }
             },
         });
         console.log(itemsCount._count);
