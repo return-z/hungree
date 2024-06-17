@@ -6,9 +6,11 @@ export const dashboardRouter = createTRPCRouter({
     getItems: protectedProcedure
     .input(z.object({
         pageNumber: z.number(),
+        searchState: z.boolean(),
+        searchTerm: z.string(),
     }))
     .query(async ({ ctx, input }) => {
-        const offset = input.pageNumber * 10;
+        const offset = (input.pageNumber - 1) * 10;
         const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
         console.log(merchantUuid);
         const menuItems = await ctx.db.menu_items.findMany({
@@ -21,15 +23,37 @@ export const dashboardRouter = createTRPCRouter({
         return menuItems;
     }),
     
-    countOfItems: protectedProcedure
+    countOfAllItems: protectedProcedure
+    .input(z.object({
+        searchState: z.boolean(),
+    }))
+    .query(async({ ctx, input }) => {
+        const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid;
+        const itemsCount = await ctx.db.menu_items.aggregate({
+            _count: {
+                item_uuid: true,
+            },
+            _avg: {
+                item_price: true,
+            },
+            where: {
+                merchant_uuid: merchantUuid,
+            },
+        });
+        console.log(itemsCount._count);
+        return itemsCount;
+    }),
+
+    countOfActiveItems: protectedProcedure
     .query(async({ ctx }) => {
-        const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid
+        const merchantUuid = ctx.auth.sessionClaims.metadata.merchantUuid;
         const itemsCount = await ctx.db.menu_items.aggregate({
             _count: {
                 item_uuid: true,
             },
             where: {
                 merchant_uuid: merchantUuid,
+                is_available: true,
             },
         });
         console.log(itemsCount._count);
