@@ -7,7 +7,10 @@ import { api } from "~/utils/api";
 
 const Dashboard: NextPage = () => {
     const [addItem, setAddItem] = useState<boolean>(false);
-    const { data } = api.dashboard.getItems.useQuery();
+    const { data } = api.dashboard.getItems.useQuery({
+        pageNumber: 0,
+    });
+    const { data: itemsCount } = api.dashboard.countOfItems.useQuery();
     return (
         <>
         <Header />
@@ -19,7 +22,7 @@ const Dashboard: NextPage = () => {
                 <div className="flex max-w-xs flex-col items-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-blue-700">
                     <h3 className="text-center text-2xl w-full font-bold">Total Items</h3>
                     <div className="flex text-2xl">
-                        {data?.length}
+                        {itemsCount}
                     </div>
                 </div>
                 <div className="flex max-w-xs items-center flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-blue-700">
@@ -36,7 +39,7 @@ const Dashboard: NextPage = () => {
                 </div> ) : 
                 <AddItemForm addItem={addItem} setAddItem={setAddItem} />}
             </div>
-            <ItemsTable data={data} />
+            <ItemsTable data={data} itemsCount={itemsCount} />
         </main>
       </>
     )
