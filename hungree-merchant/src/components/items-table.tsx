@@ -64,7 +64,7 @@ const ItemsTable = ( props: Props ) => {
       </div>
       <Pagination pageCount={props.pageCount} currentPage={props.currentPage} setCurrentPage={props.setCurrentPage} />
     </div>
-    <div className="p-4 w-5/6">
+    <div className="p-4 w-5/6 mb-4">
       <table className="w-full border-collapse text-left">
         <thead>
           <tr className="bg-blue-700 dark:bg-slate-700">

@@ -78,7 +78,7 @@ export const OnboardingForm = () => {
                   setLatLong({ lat: place.geometry?.location?.lat() , long: place.geometry?.location?.lng() });
                 }}
                 options={{
-                types: ["(regions)"],
+                types: ["establishment"],
                 componentRestrictions: { country: "IN" },
                 }}
                 name="location"
